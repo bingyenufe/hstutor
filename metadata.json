@@ -1,0 +1,7 @@
+{
+  "name": "智学导航 - 高中苏格拉底AI导师",
+  "description": "一个专门为高中生设计的引导式AI辅导工具，通过苏格拉底式提问帮助学生独立解决学科难题。",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
