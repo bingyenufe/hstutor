@@ -1,27 +1,13 @@
 
-import { SYSTEM_INSTRUCTION, OPENROUTER_MODEL } from "../constants.ts";
+import { SYSTEM_INSTRUCTION } from "../constants.ts";
 import { Message } from "../types.ts";
 
 export class GeminiService {
-  private getApiKey(): string {
-    // 兼容浏览器直接运行、Vercel 注入以及 window 级 polyfill
-    try {
-      // @ts-ignore
-      return (typeof process !== 'undefined' && process.env?.API_KEY) || 
-             (window as any).process?.env?.API_KEY || 
-             '';
-    } catch (e) {
-      return (window as any).process?.env?.API_KEY || '';
-    }
-  }
-
   private baseUrl: string = "https://openrouter.ai/api/v1/chat/completions";
 
-  async chat(history: Message[], userInput: string, imageBase64?: string): Promise<string> {
-    const apiKey = this.getApiKey();
-    
+  async chat(apiKey: string, model: string, history: Message[], userInput: string, imageBase64?: string): Promise<string> {
     if (!apiKey) {
-      throw new Error("检测到 API Key 未配置。请在 Vercel Settings -> Environment Variables 中添加 API_KEY，然后点击 Redeploy 重新部署。");
+      throw new Error("API Key 缺失，请先输入有效的密钥。");
     }
 
     const messages = [
@@ -48,11 +34,11 @@ export class GeminiService {
         headers: {
           "Authorization": `Bearer ${apiKey}`,
           "HTTP-Referer": window.location.origin,
-          "X-Title": "智学导航AI辅导",
+          "X-Title": "ZhiXue AI Tutor",
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          model: OPENROUTER_MODEL,
+          model: model,
           messages: messages,
           temperature: 0.7,
           top_p: 0.9,
@@ -64,10 +50,7 @@ export class GeminiService {
         const errorMsg = errorData.error?.message || `请求失败 (状态码: ${response.status})`;
         
         if (response.status === 401) {
-          throw new Error("API Key 验证失败，请确认 OpenRouter 密钥是否正确。");
-        }
-        if (response.status === 402) {
-          throw new Error("OpenRouter 账户余额不足，请充值后重试。");
+          throw new Error("API Key 验证失败，请确认密钥是否正确或已过期。");
         }
         throw new Error(errorMsg);
       }

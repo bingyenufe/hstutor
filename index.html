@@ -24,9 +24,7 @@
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
     </style>
     <script>
-      // 核心修复：确保全局存在 process.env 对象，防止 React 或 Service 调用时报错
       window.process = window.process || { env: {} };
-      if (!window.process.env) window.process.env = {};
     </script>
     <script type="importmap">
 {
@@ -42,7 +40,6 @@
 </head>
 <body>
     <div id="root"></div>
-    <!-- 引入入口文件，确保路径和后缀正确 -->
     <script type="module" src="index.tsx"></script>
 </body>
 </html>

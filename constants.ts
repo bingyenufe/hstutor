@@ -21,8 +21,13 @@ export const SYSTEM_INSTRUCTION = `你是一位苏格拉底式的高中辅导教
 
 4. ❤️ 情感支持：
 - 极具耐心，对错误进行正向引导：“这是一个很常见的误区，我们来看看为什么会这样……”。
-- 语气亲切，像学长/学姐，始终使用中文，使用 Markdown 排版。`;
+- 语气亲切、像学长/学姐一样，始终使用中文，使用 Markdown 排版。`;
 
 export const MAX_ROUNDS = 12;
-// 使用 OpenRouter 上的 Gemini 2.5 Flash 模型
-export const OPENROUTER_MODEL = 'google/gemini-2.5-flash';
+
+export const AVAILABLE_MODELS = [
+  { id: 'google/gemini-3-flash-preview', name: 'Gemini 3 Flash' },
+  { id: 'google/gemini-3-pro-preview', name: 'Gemini 3 Pro' }
+];
+
+export const DEFAULT_MODEL = 'google/gemini-3-flash-preview';
