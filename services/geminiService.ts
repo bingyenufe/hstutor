@@ -1,21 +1,22 @@
 
-import { SYSTEM_INSTRUCTION, OPENROUTER_MODEL } from "../constants";
-import { Message } from "../types";
+import { SYSTEM_INSTRUCTION, OPENROUTER_MODEL } from "../constants.ts";
+import { Message } from "../types.ts";
 
 export class GeminiService {
-  private apiKey: string;
-  private baseUrl: string = "https://openrouter.ai/api/v1/chat/completions";
-
-  constructor() {
-    this.apiKey = process.env.API_KEY || '';
+  private getApiKey(): string {
+    // 兼容浏览器直接运行和构建工具环境
+    // @ts-ignore
+    return process?.env?.API_KEY || window?.process?.env?.API_KEY || '';
   }
 
+  private baseUrl: string = "https://openrouter.ai/api/v1/chat/completions";
+
   async chat(history: Message[], userInput: string, imageBase64?: string): Promise<string> {
-    if (!this.apiKey) {
-      throw new Error("API Key is missing. Please set it in environment variables.");
+    const apiKey = this.getApiKey();
+    if (!apiKey) {
+      throw new Error("API Key 未配置。请在 Vercel 环境变量中设置 API_KEY。");
     }
 
-    // 构造 OpenAI 兼容格式的消息列表
     const messages = [
       { role: "system", content: SYSTEM_INSTRUCTION },
       ...history.map(msg => ({
@@ -24,14 +25,11 @@ export class GeminiService {
       }))
     ];
 
-    // 处理当前输入（支持图文混排）
     const currentContent: any[] = [{ type: "text", text: userInput || "请看这张图" }];
     if (imageBase64) {
       currentContent.push({
         type: "image_url",
-        image_url: {
-          url: imageBase64 // 包含 data:image/jpeg;base64, 前缀
-        }
+        image_url: { url: imageBase64 }
       });
     }
 
@@ -41,7 +39,7 @@ export class GeminiService {
       const response = await fetch(this.baseUrl, {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${this.apiKey}`,
+          "Authorization": `Bearer ${apiKey}`,
           "HTTP-Referer": window.location.origin,
           "X-Title": "智学导航AI辅导",
           "Content-Type": "application/json"
@@ -56,7 +54,7 @@ export class GeminiService {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error?.message || "OpenRouter API 请求失败");
+        throw new Error(errorData.error?.message || "API 请求失败");
       }
 
       const data = await response.json();

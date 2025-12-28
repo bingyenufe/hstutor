@@ -1,9 +1,9 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { geminiService } from './services/geminiService';
-import { Message } from './types';
-import { MAX_ROUNDS } from './constants';
-import MarkdownRenderer from './components/MarkdownRenderer';
+import { geminiService } from './services/geminiService.ts';
+import { Message } from './types.ts';
+import { MAX_ROUNDS } from './constants.ts';
+import MarkdownRenderer from './components/MarkdownRenderer.tsx';
 
 const App: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -50,7 +50,6 @@ const App: React.FC = () => {
     setIsLoading(true);
 
     try {
-      // 记忆 MAX_ROUNDS 轮对话
       const history = newMessages.slice(-(MAX_ROUNDS * 2));
       const aiResponse = await geminiService.chat(history.slice(0, -1), userMsg.content, userMsg.image);
       
@@ -74,7 +73,6 @@ const App: React.FC = () => {
 
   return (
     <div className="flex flex-col h-screen bg-gray-50 text-gray-900">
-      {/* Header */}
       <header className="bg-white border-b px-4 py-3 flex items-center justify-between shadow-sm sticky top-0 z-10">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-lg shadow-blue-200">
@@ -92,7 +90,6 @@ const App: React.FC = () => {
         </button>
       </header>
 
-      {/* Chat Area */}
       <main className="flex-1 overflow-y-auto px-4 py-6 custom-scrollbar space-y-6">
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center max-w-md mx-auto animate-fade-in">
@@ -121,11 +118,7 @@ const App: React.FC = () => {
               }`}>
                 {msg.image && (
                   <div className="mb-3 relative group">
-                    <img 
-                      src={msg.image} 
-                      alt="Uploaded question" 
-                      className="max-w-full rounded-lg border border-blue-400 shadow-sm" 
-                    />
+                    <img src={msg.image} alt="Question" className="max-w-full rounded-lg border border-blue-400 shadow-sm" />
                   </div>
                 )}
                 <MarkdownRenderer content={msg.content} />
@@ -140,7 +133,7 @@ const App: React.FC = () => {
           <div className="flex justify-start">
             <div className="bg-white border border-gray-100 px-4 py-3 rounded-2xl rounded-tl-none shadow-sm flex items-center gap-3">
               <div className="flex space-x-1">
-                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce"></div>
                 <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
                 <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
               </div>
@@ -151,7 +144,6 @@ const App: React.FC = () => {
         <div ref={messagesEndRef} />
       </main>
 
-      {/* Input Area */}
       <div className="bg-white border-t p-4 pb-8 sm:pb-6 shadow-[0_-4px_12px_rgba(0,0,0,0.02)]">
         <form onSubmit={handleSendMessage} className="max-w-4xl mx-auto">
           {selectedImage && (
@@ -172,18 +164,10 @@ const App: React.FC = () => {
               type="button"
               onClick={() => fileInputRef.current?.click()}
               className="p-3 text-gray-400 hover:text-blue-600 transition-colors flex-shrink-0"
-              title="上传题目照片"
             >
               <i className="fas fa-camera text-xl"></i>
             </button>
-            <input 
-              type="file" 
-              ref={fileInputRef} 
-              className="hidden" 
-              accept="image/*" 
-              onChange={handleImageChange} 
-            />
-            
+            <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageChange} />
             <textarea
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
@@ -198,7 +182,6 @@ const App: React.FC = () => {
               rows={1}
               style={{ height: 'auto', minHeight: '44px' }}
             />
-            
             <button
               type="submit"
               disabled={(!inputText.trim() && !selectedImage) || isLoading}
@@ -215,9 +198,7 @@ const App: React.FC = () => {
             <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">
               {messages.length / 2} / {MAX_ROUNDS} 轮对话记忆
             </span>
-            <p className="text-[10px] text-gray-400">
-              Powered by OpenRouter & Gemini 2.5
-            </p>
+            <p className="text-[10px] text-gray-400">Powered by OpenRouter & Gemini 2.5</p>
           </div>
         </form>
       </div>
