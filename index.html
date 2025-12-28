@@ -24,8 +24,9 @@
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
     </style>
     <script>
-      // 防止浏览器环境下找不到 process 对象导致白屏
+      // 核心修复：确保全局存在 process.env 对象，防止 React 或 Service 调用时报错
       window.process = window.process || { env: {} };
+      if (!window.process.env) window.process.env = {};
     </script>
     <script type="importmap">
 {
@@ -41,7 +42,7 @@
 </head>
 <body>
     <div id="root"></div>
-    <!-- 必须显式引入入口文件 -->
+    <!-- 引入入口文件，确保路径和后缀正确 -->
     <script type="module" src="index.tsx"></script>
 </body>
 </html>
